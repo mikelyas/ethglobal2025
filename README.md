@@ -4,11 +4,16 @@ OmniSynth lets you lock up one cryptocurrency to create another that you can tra
 
 ---
 
+## Abstract
+
+OmniSynth is a unified platform that bridges multiple blockchain networks—Rootstock, Ethereum, and Flow—allowing users to seamlessly mint, swap, earn yield, and redeem synthetic tokens. By leveraging cross-chain messaging, real-time pricing oracles, and zero-knowledge proofs, OmniSynth abstracts away complexity and delivers a streamlined user experience. This README provides a concise overview of the protocol’s components, user flows, and architecture.
+
+---
+
 The diagrams below illustrate:
 
 1. **High-level system architecture** (how contracts and services interact on Rootstock, Ethereum, Flow, LayerZero, etc.).
 2. **User interaction flow** (step-by-step journey from depositing BTC to redeeming back).
-3. **Detailed component architecture** (frontend, off-chain services, on-chain contracts, and cross-chain channels).
 
 ## Table of Contents
 
@@ -259,6 +264,11 @@ This diagram illustrates the core components and interactions in the OmniSynth p
 
 Together, these components enable a seamless, trust-minimized omni-chain synthetic asset experience for users.
 
+---
+
+## Summary
+
+OmniSynth simplifies cross-chain DeFi by allowing users to deposit one cryptocurrency and seamlessly mint, trade, yield, and redeem synthetic tokens, all within a single interface. Built on Rootstock, Ethereum, and Flow, and powered by LayerZero messaging, Pyth pricing, and vlayer proofs, the protocol ensures secure, real-time operations across networks. Blockscout integrations provide transparent tracking and user rewards, delivering a frictionless synthetic asset experience.
 
 
 
