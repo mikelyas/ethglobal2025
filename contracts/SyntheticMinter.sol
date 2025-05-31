@@ -1,74 +1,72 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./stubs/PythOracleStub.sol";
+import "./stubs/CrossChainMock.sol";
+import "./stubs/SwapManagerStub.sol";
+import "./stubs/EmailRecoveryStub.sol";
+import "./stubs/MeritsStub.sol";
+import "./stubs/FlowSyntheticStub.sol";
 
-contract SyntheticMinter is ERC20, Ownable {
-    // Collateral ratio (150%) - percentage of ETH needed to mint tokens
-    // Коэффициент обеспечения (150%) - процент ETH, необходимый для чеканки токенов
-    uint256 public collateralRatio = 150;
+contract SyntheticMinter is Ownable {
+    PythOracleStub public pythOracle;
+    CrossChainMock public crossChainMock;
+    SwapManagerStub public swapManager;
+    EmailRecoveryStub public emailRecovery;
+    MeritsStub public merits;
+    FlowSyntheticStub public flowSynthetic;
 
-    // Events for tracking collateral deposits and redemptions
-    // События для отслеживания внесения и погашения обеспечения
     event CollateralDeposited(address indexed user, uint256 amountDeposited, uint256 amountMinted);
-    event CollateralRedeemed(address indexed user, uint256 amountBurned, uint256 ETHReturned);
+    event CollateralRedeemed(address indexed user, uint256 amountBurned, uint256 amountETHReturned);
 
-    constructor() ERC20("Synthetic Token", "SYNTH") Ownable(msg.sender) {}
+    constructor(
+        address _pythOracle,
+        address _crossChainMock,
+        address _swapManager,
+        address _emailRecovery,
+        address _merits,
+        address _flowSynthetic
+    ) Ownable(msg.sender) {
+        pythOracle = PythOracleStub(_pythOracle);
+        crossChainMock = CrossChainMock(_crossChainMock);
+        swapManager = SwapManagerStub(_swapManager);
+        emailRecovery = EmailRecoveryStub(_emailRecovery);
+        merits = MeritsStub(_merits);
+        flowSynthetic = FlowSyntheticStub(_flowSynthetic);
+    }
 
-    /**
-     * @dev Deposits ETH and mints synthetic tokens based on collateral ratio
-     * @notice User deposits ETH and receives synthetic tokens at the current collateral ratio
-     * 
-     * Внесение ETH и чеканка синтетических токенов на основе коэффициента обеспечения
-     * Пользователь вносит ETH и получает синтетические токены по текущему коэффициенту обеспечения
-     */
-    function depositAndMint() external payable {
-        // Check that deposit amount is greater than zero
-        // Проверка, что сумма депозита больше нуля
-        require(msg.value > 0, "Cannot deposit zero");
-
-        // Calculate amount of tokens to mint based on collateral ratio
-        // Расчет количества токенов для чеканки на основе коэффициента обеспечения
-        uint256 mintAmount = (msg.value * 100) / collateralRatio;
-
-        // Mint tokens to the sender
-        // Чеканка токенов отправителю
-        _mint(msg.sender, mintAmount);
-
-        // Emit deposit event
-        // Выпуск события о внесении обеспечения
+    function depositAndMint() external payable returns (uint256) {
+        require(msg.value > 0, "Must deposit ETH");
+        
+        // Calculate mint amount (150% collateralization ratio)
+        uint256 mintAmount = (msg.value * 100) / 150;
+        
+        // Mint synthetic tokens
+        flowSynthetic.receiveCrossChainSynth(msg.sender, mintAmount);
+        
         emit CollateralDeposited(msg.sender, msg.value, mintAmount);
+        return mintAmount;
     }
 
-    /**
-     * @dev Burns synthetic tokens and returns the corresponding ETH collateral
-     * @param burnAmount Amount of synthetic tokens to burn
-     * @notice User burns synthetic tokens and receives ETH back at the current collateral ratio
-     * 
-     * Сжигание синтетических токенов и возврат соответствующего обеспечения в ETH
-     * Пользователь сжигает синтетические токены и получает обратно ETH по текущему коэффициенту обеспечения
-     */
-    function burnAndRedeem(uint256 burnAmount) external {
-        // Check that user has enough tokens to burn
-        // Проверка, что у пользователя достаточно токенов для сжигания
-        require(balanceOf(msg.sender) >= burnAmount, "Insufficient synth balance");
-
-        // Calculate ETH amount to return based on collateral ratio
-        // Расчет количества ETH для возврата на основе коэффициента обеспечения
-        uint256 redeemAmount = (burnAmount * collateralRatio) / 100;
-
-        // Burn the synthetic tokens
-        // Сжигание синтетических токенов
-        _burn(msg.sender, burnAmount);
-
-        // Send ETH back to the user
-        // Отправка ETH обратно пользователю
-        (bool success, ) = payable(msg.sender).call{value: redeemAmount}("");
+    function burnAndRedeem(uint256 amount) external returns (uint256) {
+        require(amount > 0, "Must burn non-zero amount");
+        
+        // Calculate ETH to return (150% collateralization ratio)
+        uint256 ethToReturn = (amount * 150) / 100;
+        require(address(this).balance >= ethToReturn, "Insufficient ETH in contract");
+        
+        // Burn synthetic tokens
+        flowSynthetic.burnToEthereum(msg.sender, amount);
+        
+        // Return ETH
+        (bool success, ) = payable(msg.sender).call{value: ethToReturn}("");
         require(success, "ETH transfer failed");
-
-        // Emit redeem event
-        // Выпуск события о погашении обеспечения
-        emit CollateralRedeemed(msg.sender, burnAmount, redeemAmount);
+        
+        emit CollateralRedeemed(msg.sender, amount, ethToReturn);
+        return ethToReturn;
     }
+
+    // Function to receive ETH
+    receive() external payable {}
 } 
