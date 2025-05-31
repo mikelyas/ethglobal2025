@@ -30,7 +30,7 @@ This project implements a synthetic-asset protocol spanning multiple chains:
 
 - **Rootstock (RSK)** — Users deposit RBTC (Rootstock’s native coin) into a collateral contract.  
 - **LayerZero** — Facilitates cross-chain messaging between Rootstock, Ethereum, and Flow.  
-- **Ethereum** — Mints a synthetic ERC-20 token (e.g., sUSDT) based on Pyth oracle pricing; users can swap on 1inch.  
+- **Ethereum** — Mints a synthetic ERC-20 token (e.g., USDS) based on Pyth oracle pricing; users can swap on 1inch.  
 - **Flow (EVM-compatible)** — A mirrored synthetic contract receives cross-chain tokens and routes them into yield strategies.  
 - **Blockscout** — Provides SDK methods, Merits API for user rewards, and explorer links.  
 - **vlayer** — Supplies teleport proofs (cross-chain state) and email proofs for wallet recovery.  
@@ -73,13 +73,13 @@ graph TD
 - Once confirmed, LayerZero relays the deposit event to Ethereum.
 
 ## Step 2 – Mint Synthetic Assets on Ethereum
-- On receiving the LayerZero message, the Synthetic Mint Contract mints an equivalent amount of sUSD (or similar) based on price from Pyth Oracle.
+- On receiving the LayerZero message, the Synthetic Mint Contract mints an equivalent amount of USDS (or similar) based on price from Pyth Oracle.
 
 ## Step 3 – Swap Synthetic Assets via 1inch
-- User can optionally swap minted sUSD for other tokens on Ethereum using the 1inch Swap Aggregator.
+- User can optionally swap minted USDS for other tokens on Ethereum using the 1inch Swap Aggregator.
 
 ## Step 4 – Yield Farming on Flow or Ethereum
-- User transfers sUSD to Flow via LayerZero (Flow Synth Contract) or stays on Ethereum.
+- User transfers USDS to Flow via LayerZero (Flow Synth Contract) or stays on Ethereum.
 - On Flow, the Flow Synthetic Contract deposits tokens into a yield strategy.
 
 ## Step 5 – Check Balance and Yield
