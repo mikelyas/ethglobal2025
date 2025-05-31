@@ -1,0 +1,160 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: >
+  Project‐wide rules that are **always** loaded into Cursor’s context for the OmniChain Synthetic Asset MVP.
+alwaysApply: true
+globs:
+  - "**/*"
+---
+
+# Cursor Project Rules (Always‐Applied)
+
+1. **Directory Structure**  
+   - The repository **must** use exactly this layout:
+     ```
+     /contracts
+       ├─ SyntheticMinter.sol
+       └─ stubs/
+          ├─ CrossChainMock.sol
+          ├─ FlowSyntheticStub.sol
+          ├─ PythOracleStub.sol
+          ├─ SwapManagerStub.sol
+          ├─ EmailRecoveryStub.sol
+          └─ MeritsStub.sol
+
+     /test
+       └─ test_syntheticMinter.js
+
+     /scripts
+       └─ deployAll.js
+
+     /frontend
+       ├─ package.json
+       ├─ public/
+       └─ src/
+          ├─ App.js
+          ├─ contractABI.json
+          └─ stubs/
+             ├─ CrossChainMock.json
+             ├─ FlowSyntheticStub.json
+             ├─ SwapManagerStub.json
+             ├─ EmailRecoveryStub.json
+             └─ MeritsStub.json
+
+     .deployedAddresses.json
+     README.md
+     demo.mp4
+     ```
+   - The rules file itself **must** reside at:
+     ```
+     .cursor/rules/project-rules.md
+     ```
+
+2. **Solidity File Header (Always‐Required)**  
+   - Every `.sol` file **must** begin with exactly:
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+     ```
+
+3. **OpenZeppelin Imports (Always‐Required)**  
+   - Any contract that uses standard tokens or access control **must** import from OpenZeppelin:
+     ```solidity
+     import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+     import "@openzeppelin/contracts/access/Ownable.sol";
+     ```
+
+4. **Commenting (Always‐Required)**  
+   - Before every function or logical block in Solidity, **always** include a single‐line English comment that describes purpose.  
+     ```solidity
+     // Description: Deposits ETH and mints synthetic tokens.
+     function depositAndMint() external payable { … }
+     ```
+
+5. **Naming Conventions (Always‐Required)**  
+   - **Contract filenames**: `PascalCase.sol` (must match contract name exactly).  
+   - **Event names**: `PascalCase` (e.g., `CollateralDeposited`).  
+   - **Function names**: `camelCase` (e.g., `depositAndMint`).  
+   - **State variables**: `camelCase` (e.g., `collateralRatio`).
+
+6. **Stub Contracts (Always‐Required)**  
+   - All stub contracts under `contracts/stubs/` **must**:
+     1. Start with the standard header (`SPDX` + `pragma`).  
+     2. Contain **no business logic** (only minimal signature + event emission).  
+     3. Use exactly the specified function names and event names (no deviations).
+
+7. **Test File Placement (Always‐Required)**  
+   - The single test file **must** be located at:
+     ```
+     test/test_syntheticMinter.js
+     ```
+
+8. **Deployment Script Placement (Always‐Required)**  
+   - The deployment script **must** be located at:
+     ```
+     scripts/deployAll.js
+     ```
+
+9. **React Frontend Placement (Always‐Required)**  
+   - The main React component **must** be located at:
+     ```
+     frontend/src/App.js
+     ```
+   - Stub ABIs **must** reside under:
+     ```
+     frontend/src/stubs/*.json
+     ```
+   - The ABI for the main contract **must** be at:
+     ```
+     frontend/src/contractABI.json
+     ```
+
+10. **Git & Version Control (Always‐Required)**  
+    - **Do not commit** any of the following to git:
+      ```
+      node_modules/
+      artifacts/
+      cache/
+      build/
+      dist/
+      deployedAddresses.json
+      .env
+      ```
+    - **Always** include all `.sol`, `.js`, `.json`, and `.md` source files in commits.
+
+11. **Dependency Management (Always‐Required)**  
+    - Hardhat dependencies **must** be installed via:
+      ```bash
+      npm install --save-dev hardhat @nomiclabs/hardhat-ethers ethers @openzeppelin/contracts
+      ```
+    - Frontend dependencies **must** be installed via:
+      ```bash
+      cd frontend
+      npm install react react-dom ethers
+      ```
+
+12. **Workflow Commands (Always‐Required)**  
+    - **Compile & Test** before every commit:
+      ```bash
+      npx hardhat compile
+      npx hardhat test
+      ```
+    - **Deploy Locally** (order matters):
+      ```bash
+      npx hardhat node
+      npx hardhat run scripts/deployAll.js --network localhost
+      ```
+    - **Start Frontend**:
+      ```bash
+      cd frontend
+      npm install
+      npm start
+      ```
+
+---
+
+> **Note:** Because `alwaysApply: true`, these rules are included in every Cursor invocation, for every file in the repository. No other rule files are needed or loaded by Cursor.
