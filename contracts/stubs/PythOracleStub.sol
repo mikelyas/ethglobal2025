@@ -12,6 +12,38 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract PythOracleStub is Ownable {
     /**
+     * @dev Contract constructor - sets msg.sender as the initial owner
+     * @dev Конструктор контракта - устанавливает msg.sender как начального владельца
+     */
+    constructor() Ownable(msg.sender) {}
+
+    /**
+     * @dev Emitted when account access is recovered using email verification
+     * @param user Address of the user recovering access
+     * @param emailHash Hash of the email used for recovery
+     *
+     * @dev Событие при восстановлении доступа к аккаунту через подтверждение email
+     * @param user Адрес пользователя, восстанавливающего доступ
+     * @param emailHash Хеш email, использованного для восстановления
+     */
+    event EmailRecovered(address indexed user, bytes32 emailHash);
+
+    /**
+     * @dev Simulates account recovery using email proof (always returns true)
+     * @param proof Verification proof data (unused in stub)
+     * @param emailHash Hash of the email used for recovery
+     * @return success Always returns true in this stub
+     */
+    function recoverAccess(
+        bytes calldata proof,
+        bytes32 emailHash
+    ) external returns (bool) {
+        // Stub: always return true
+        emit EmailRecovered(msg.sender, emailHash);
+        return true;
+    }
+
+    /**
      * @dev Default price is set to $3000 with 18 decimals
      * @dev Цена по умолчанию установлена на $3000 с 18 десятичными знаками
      */

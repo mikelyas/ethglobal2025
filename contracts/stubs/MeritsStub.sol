@@ -18,15 +18,16 @@ contract MeritsStub is Ownable {
     mapping(address => uint256) public merits;
 
     /**
+     * @dev Contract constructor - sets msg.sender as the initial owner
+     * @dev Конструктор контракта - устанавливает msg.sender как начального владельца
+     */
+    constructor() Ownable(msg.sender) {}
+
+    /**
      * @dev Emitted when merit points are awarded to a user
      * @param user Address of the user receiving merits
      * @param points Amount of merit points awarded
      * @param totalMerits Total merit points after awarding
-     *
-     * @dev Событие при начислении очков заслуг пользователю
-     * @param user Адрес пользователя, получающего очки
-     * @param points Количество начисленных очков заслуг
-     * @param totalMerits Общее количество очков после начисления
      */
     event MeritsAwarded(
         address indexed user,
